@@ -1,0 +1,37 @@
+# Create a deployent (which contains a pod)-
+# kubectl apply -f query-depl.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: query-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: query
+  template:
+    metadata:
+      labels:
+        app: query
+    spec:
+      containers:
+        - name: query
+          image: docker.io/soumy9/query:latest
+# to seperate 2 configs in same file, they are seperated by ---
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: query-srv
+spec:
+  selector:
+    #to tell the service what pods it is going to allow access to.
+    app: query
+    # i.e. allow access to any request with an app: even-bus
+  type: ClusterIP
+  # by default type is ClusterIP only
+  ports:
+    - name: query
+      protocol: TCP
+      port: 4002
+      targetPort: 4002

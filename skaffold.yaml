@@ -1,0 +1,65 @@
+# command is: skaffold dev
+apiVersion: skaffold/v2alpha3
+kind: Config
+deploy:
+  kubectl:
+    # So by adding in this manifest line, we are telling scaffold that we want it to watch all of these different YAML files.
+    # Any time that we make a change to one of those files, Scaffold is going to automatically reapply that config file to our Kubernetes cluster.
+    # So in other words, it's going to save us from the hassle of having to run up CTL Apply F over and over and over again any time that we create a file or make a change to a file.
+    # By listing out manifests.
+    manifests:
+      - ./infra/k8s/*
+build:
+  local:
+    #   So by default, whenever scaffold makes a change to one of our images or rebuilds an image, it's going to try to push it up to Docker Hub that is not actually required when we're using scaffold.
+    # So we're going to disable that default behavior with the setting right here.
+    push: false
+  artifacts:
+    - image: soumy9/client
+      context: client
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.js'
+            dest: .
+    - image: soumy9/posts
+      context: posts
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '*.js'
+            dest: .
+    - image: soumy9/comments
+      context: comments
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '*.js'
+            dest: .
+    - image: soumy9/event-bus
+      context: event-bus
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '*.js'
+            dest: .
+    - image: soumy9/query
+      context: query
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '*.js'
+            dest: .
+    - image: soumy9/moderation
+      context: moderation
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '*.js'
+            dest: .

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: posts-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: posts
+  template:
+    metadata:
+      labels:
+        app: posts
+    spec:
+      containers:
+        - name: posts
+          image: docker.io/soumy9/posts:latest
+# to seperate 2 configs in same file, they are seperated by ---
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: posts-clusterip-srv
+spec:
+  selector:
+    #to tell the service what pods it is going to allow access to.
+    app: posts
+    # i.e. allow access to any request with an app: posts
+  type: ClusterIP
+  # by default type is ClusterIP only
+  ports:
+    - name: posts
+      protocol: TCP
+      port: 4000
+      targetPort: 4000

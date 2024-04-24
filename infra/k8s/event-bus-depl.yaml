@@ -1,0 +1,37 @@
+# Create a deployent (which contains a pod)-
+# kubectl apply -f event-bus-depl.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-bus-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: event-bus
+  template:
+    metadata:
+      labels:
+        app: event-bus
+    spec:
+      containers:
+        - name: event-bus
+          image: docker.io/soumy9/event-bus:latest
+# to seperate 2 configs in same file, they are seperated by ---
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: event-bus-srv
+spec:
+  selector:
+    #to tell the service what pods it is going to allow access to.
+    app: event-bus
+    # i.e. allow access to any request with an app: even-bus
+  type: ClusterIP
+  # by default type is ClusterIP only
+  ports:
+    - name: event-bus
+      protocol: TCP
+      port: 4005
+      targetPort: 4005

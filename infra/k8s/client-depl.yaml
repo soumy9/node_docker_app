@@ -1,0 +1,37 @@
+# Create a deployent (which contains a pod)-
+# kubectl apply -f client-depl.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client
+          image: docker.io/soumy9/client:latest
+# to seperate 2 configs in same file, they are seperated by ---
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-srv
+spec:
+  selector:
+    #to tell the service what pods it is going to allow access to.
+    app: client
+    # i.e. allow access to any request with an app: even-bus
+  type: ClusterIP
+  # by default type is ClusterIP only
+  ports:
+    - name: client
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
